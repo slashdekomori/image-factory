@@ -16,4 +16,4 @@ jobs:
         working-directory: debian13-golden
         run: packer build -force debian.pkr.hcl
       - name: Publish
-        run: ./scripts/publish.sh debian-13 debian13-golden/output/debian-13-custom.qcow2
+        run: bash ./scripts/publish.sh debian-13 debian13-golden/output/debian-13-custom.qcow2
