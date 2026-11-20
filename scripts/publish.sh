@@ -11,5 +11,7 @@ cp "$file" "$dest/$name-$ver.qcow2"
 (cd "$dest" && sha256sum *.qcow2 >SHA256SUMS)
 printf '{"version":"%s","commit":"%s"}\n' "$ver" "${GITHUB_SHA:-unknown}" >"$dest/manifest.json"
 
-ln -sfn "$ver" "$root/latest"                    # move "latest"
-ls -1d "$root"/2* | head -n -5 | xargs -r rm -rf # keep the last 5
+# move "latest"
+ln -sfn "$ver" "$root/latest"
+# keep the last 5
+find "$root" -mindepth 1 -maxdepth 1 -type d -name '2*' | sort -V | head -n -5 | xargs -r rm -rf
