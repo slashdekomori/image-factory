@@ -12,8 +12,8 @@ jobs:
         run: packer init . && packer validate .
       - name: Build
         env:
-          PACKER_LOG: 1
+          # PACKER_LOG: 1
         working-directory: debian13-golden
         run: packer build -force debian.pkr.hcl
-      - name: mv
-        run: mv debian13-golden/output/debian-13-custom.qcow2 /home/dekomori/output
+      - name: Publish
+        run: ./scripts/publish.sh debian-13 debian13-golden/output/debian-13-custom.qcow2
