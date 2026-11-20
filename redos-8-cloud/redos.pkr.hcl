@@ -12,7 +12,7 @@ source "qemu" "redos" {
   iso_checksum = "file:file://${path.cwd}/iso/redos-8-20260716.0-Everything-x86_64-DVD1.iso.MD5SUM"
 
   output_directory = "output"
-  vm_name          = "redos8-cloud.qcow2"
+  vm_name          = "redos-8-cloud.qcow2"
   format           = "qcow2"
   accelerator      = "kvm"
   disk_size        = "20G"
