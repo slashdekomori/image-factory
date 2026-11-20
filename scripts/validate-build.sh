@@ -9,6 +9,9 @@
 #   <build-dir>/output/<build-dir>.qcow2
 #
 # i.e. the qcow2 name matches the directory name.
+#
+# If <build-dir>/pre-build.sh exists, it runs first, from inside <build-dir>.
+# Use it for image-specific setup such as downloading an install ISO.
 
 set -euo pipefail
 
@@ -37,6 +40,13 @@ main() {
     }
 
     echo "building $build_name in $build_dir"
+
+    # Image-specific preparation (e.g. downloading an install ISO).
+    if [[ -f "$build_dir/pre-build.sh" ]]; then
+        echo "running pre-build hook for $build_name"
+        (cd "$build_dir" && bash ./pre-build.sh)
+    fi
+
     (
         cd "$build_dir"
         packer init .
