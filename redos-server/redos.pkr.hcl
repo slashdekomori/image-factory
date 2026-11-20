@@ -47,11 +47,28 @@ source "qemu" "redos" {
 build {
   sources = ["source.qemu.redos"]
 
+  # Packages, services, config
   provisioner "shell" {
     inline = [
       "dnf install -y cloud-init cloud-utils-growpart qemu-guest-agent",
       "systemctl enable qemu-guest-agent cloud-init-local cloud-init cloud-config cloud-final",
       "echo 'datasource_list: [ NoCloud, ConfigDrive ]' > /etc/cloud/cloud.cfg.d/99-pve.cfg",
+    ]
+  }
+
+  # Key-only ssh
+  provisioner "shell" {
+    inline = [
+      "install -d -m 0755 /etc/ssh/sshd_config.d",
+      "printf '%s\\n' 'PasswordAuthentication no' 'ChallengeResponseAuthentication no' 'PermitRootLogin prohibit-password' > /etc/ssh/sshd_config.d/00-key-only.conf",
+      "chmod 0644 /etc/ssh/sshd_config.d/00-key-only.conf",
+      "grep -q '^Include /etc/ssh/sshd_config.d/' /etc/ssh/sshd_config || sed -i '1i Include /etc/ssh/sshd_config.d/*.conf' /etc/ssh/sshd_config",
+    ]
+  }
+
+  # Cleanup
+  provisioner "shell" {
+    inline = [
       "cloud-init clean --logs",
       "truncate -s 0 /etc/machine-id",
       "rm -f /etc/ssh/ssh_host_*",
