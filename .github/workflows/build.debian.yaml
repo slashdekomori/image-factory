@@ -2,6 +2,10 @@ name: build
 on:
   workflow_dispatch:
 
+concurrency:
+  group: image-factory
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: self-hosted
@@ -9,12 +13,10 @@ jobs:
       max-parallel: 1
       fail-fast: false
       matrix:
-        include:
-          - image: debian-13-golden
-            dir: debian-13-golden
+        image: [debian-13-golden]
     steps:
       - uses: actions/checkout@v4
       - name: Validate & Build
-        run: ./scripts/validate-build.sh ${{ matrix.dir }}
+        run: ./scripts/validate-build.sh "${{ matrix.image }}"
       - name: Publish
-        run: ./scripts/publish.sh ${{ matrix.image }} ${{ matrix.dir }}/output/${{ matrix.dir }}.qcow2
+        run: ./scripts/publish.sh "${{ matrix.image }}" "${{ matrix.image }}/output/${{ matrix.image }}.qcow2"
