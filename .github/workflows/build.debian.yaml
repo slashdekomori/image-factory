@@ -14,7 +14,7 @@ jobs:
             dir: debian-13-golden
     steps:
       - uses: actions/checkout@v4
-      - name: Build
-        run: ./scripts/build.sh ${{ matrix.dir }}
+      - name: Validate & Build
+        run: ./scripts/validate-build.sh ${{ matrix.dir }}
       - name: Publish
         run: ./scripts/publish.sh ${{ matrix.image }} ${{ matrix.dir }}/output/${{ matrix.dir }}.qcow2
