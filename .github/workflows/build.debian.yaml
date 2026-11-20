@@ -1,0 +1,17 @@
+name: build-debian
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: [self-hosted, linux, x64]
+  steps:
+    - uses: actions/checkout@v4
+    - name: Validate
+      working-directory: debian13-golden
+      run: packer init . && packer validate .
+    - name: Build
+      working-directory: debian13-golden
+      run: packer build -force debian.pkr.hcl
+    - name: mv
+      run: mv debian13-golden/output/debian-13-custom.qcow2 /home/dekomori/output
