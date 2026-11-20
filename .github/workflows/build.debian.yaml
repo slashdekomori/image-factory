@@ -11,6 +11,8 @@ jobs:
         working-directory: debian13-golden
         run: packer init . && packer validate .
       - name: Build
+        env:
+          PACKER_LOG: 1
         working-directory: debian13-golden
         run: packer build -force debian.pkr.hcl
       - name: mv
