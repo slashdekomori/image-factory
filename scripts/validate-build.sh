@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Build a golden qcow2 image with Packer.
 #
-# Usage: build.sh <build-dir>
+# Usage: validate-build.sh <build-dir>
 #
 # <build-dir> is any directory containing a Packer template, relative to the
 # repository root or absolute. The artifact must be:

@@ -1,19 +1,20 @@
-name: build-debian
+name: build
 on:
   workflow_dispatch:
 
 jobs:
   build:
-    runs-on: [self-hosted, linux, x64]
+    runs-on: self-hosted
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        include:
+          - image: debian-13-golden
+            dir: debian-13-golden
     steps:
       - uses: actions/checkout@v4
-      - name: Validate
-        working-directory: debian13-golden
-        run: packer init . && packer validate .
       - name: Build
-        # env:
-        #   PACKER_LOG: 1
-        working-directory: debian13-golden
-        run: packer build -force debian.pkr.hcl
+        run: ./scripts/build.sh ${{ matrix.dir }}
       - name: Publish
-        run: bash ./scripts/publish.sh debian-13 debian13-golden/output/debian-13-custom.qcow2
+        run: ./scripts/publish.sh ${{ matrix.image }} ${{ matrix.dir }}/output/${{ matrix.dir }}.qcow2
