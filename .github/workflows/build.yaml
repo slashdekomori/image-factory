@@ -1,6 +1,16 @@
 name: build
 on:
   workflow_dispatch:
+    inputs:
+      image:
+        description: Image to build
+        type: choice
+        default: all
+        options:
+          - all
+          - debian-13-wired
+          - redos-8-cloud
+          - redos-8-wired
 
 concurrency:
   group: image-factory
@@ -11,24 +21,43 @@ permissions:
   packages: write
 
 jobs:
+  prepare:
+    runs-on: self-hosted
+    outputs:
+      matrix: ${{ steps.set.outputs.matrix }}
+    steps:
+      - id: set
+        env:
+          INPUT_IMAGE: ${{ inputs.image }}
+        run: |
+          if [[ "$INPUT_IMAGE" == "all" ]]; then
+            # Order matters: redos-8-wired pulls redos-8-cloud from ghcr.io
+            echo 'matrix=["debian-13-wired","redos-8-cloud","redos-8-wired"]' >> "$GITHUB_OUTPUT"
+          else
+            echo "matrix=[\"$INPUT_IMAGE\"]" >> "$GITHUB_OUTPUT"
+          fi
+
   build:
+    needs: prepare
     runs-on: self-hosted
     strategy:
       max-parallel: 1
       fail-fast: false
       matrix:
-        image: [debian-13-wired, redos-8-cloud, redos-8-wired]
+        image: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
-      - name: Validate & Build
-        run: bash ./scripts/validate-build.sh "${{ matrix.image }}"
-      - name: Publish
-        run: bash ./scripts/publish.sh "${{ matrix.image }}" "${{ matrix.image }}/output/${{ matrix.image }}.qcow2"
 
-      - uses: oras-project/setup-oras@v1
       - name: Log in to GitHub Packages
         run: echo "$GITHUB_TOKEN" | oras login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Validate & Build
+        run: bash ./scripts/validate-build.sh "${{ matrix.image }}"
+
+      - name: Publish
+        run: bash ./scripts/publish.sh "${{ matrix.image }}" "${{ matrix.image }}/output/${{ matrix.image }}.qcow2"
+
       - name: Publish to GitHub Packages
         run: bash ./scripts/github-publish.sh "${{ matrix.image }}"
