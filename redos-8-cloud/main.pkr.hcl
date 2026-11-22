@@ -7,7 +7,7 @@ packer {
   }
 }
 
-source "qemu" "redos" {
+source "qemu" "system" {
   iso_url      = "file://${path.cwd}/iso/redos-8-20260716.0-Everything-x86_64-DVD1.iso"
   iso_checksum = "file:file://${path.cwd}/iso/redos-8-20260716.0-Everything-x86_64-DVD1.iso.MD5SUM"
 
@@ -22,6 +22,12 @@ source "qemu" "redos" {
 
   cpus   = 2
   memory = 2048
+
+  # Compression
+  disk_compression   = true    # qemu-img convert -c on the output
+  disk_discard       = "unmap" # lets fstrim actually free blocks
+  disk_detect_zeroes = "unmap" # zeroed blocks are dropped too
+  skip_compaction    = false   # (default) keep the compaction pass
 
   headless         = true
   vnc_bind_address = "127.0.0.1"
@@ -45,7 +51,7 @@ source "qemu" "redos" {
 }
 
 build {
-  sources = ["source.qemu.redos"]
+  sources = ["source.qemu.system"]
 
   # Packages, services, config
   provisioner "shell" {

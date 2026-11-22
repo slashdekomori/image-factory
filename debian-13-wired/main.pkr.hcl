@@ -12,7 +12,7 @@ variable "base_url" {
   default = "https://cloud.debian.org/images/cloud/trixie/latest"
 }
 
-source "qemu" "debian" {
+source "qemu" "system" {
   # Base image: boot the cloud image directly, no ISO install
   iso_url          = "${var.base_url}/debian-13-generic-amd64.qcow2"
   iso_checksum     = "file:${var.base_url}/SHA512SUMS"
@@ -28,6 +28,12 @@ source "qemu" "debian" {
   disk_interface = "virtio"
   net_device     = "virtio-net"
   headless       = true # set false to watch the console
+
+  # Compression
+  disk_compression   = true    # qemu-img convert -c on the output
+  disk_discard       = "unmap" # lets fstrim actually free blocks
+  disk_detect_zeroes = "unmap" # zeroed blocks are dropped too
+  skip_compaction    = false   # (default) keep the compaction pass
 
   # cloud-init seed, attached as a CD labelled "cidata"
   # (needs xorriso, genisoimage or mkisofs on the host)
@@ -50,7 +56,7 @@ source "qemu" "debian" {
 }
 
 build {
-  sources = ["source.qemu.debian"]
+  sources = ["source.qemu.system"]
 
   # Wait for first-boot cloud-init to finish before touching the system
   provisioner "shell" {
