@@ -1,2 +1,6 @@
+# Output directory for images
 **/output/
+
+# Pre-build installs
 **/iso/
+**/image/
