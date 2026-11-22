@@ -50,6 +50,8 @@ build {
   # Packages, services, config
   provisioner "shell" {
     inline = [
+      "sudo dnf -y makecache",
+      "sudo dnf -y upgrade",
       "dnf install -y cloud-init cloud-utils-growpart qemu-guest-agent",
       "systemctl enable qemu-guest-agent cloud-init-local cloud-init cloud-config cloud-final",
       "echo 'datasource_list: [ NoCloud, ConfigDrive ]' > /etc/cloud/cloud.cfg.d/99-pve.cfg",
