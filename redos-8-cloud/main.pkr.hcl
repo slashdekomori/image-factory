@@ -18,7 +18,6 @@ source "qemu" "system" {
   disk_size        = "10G"
   disk_interface   = "virtio-scsi"
   net_device       = "virtio-net"
-  disk_compression = true
 
   cpus   = 2
   memory = 2048
