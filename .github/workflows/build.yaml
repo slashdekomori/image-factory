@@ -21,9 +21,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Validate & Build
-        run: ./scripts/validate-build.sh "${{ matrix.image }}"
+        run: bash ./scripts/validate-build.sh "${{ matrix.image }}"
       - name: Publish
-        run: ./scripts/publish.sh "${{ matrix.image }}" "${{ matrix.image }}/output/${{ matrix.image }}.qcow2"
+        run: bash ./scripts/publish.sh "${{ matrix.image }}" "${{ matrix.image }}/output/${{ matrix.image }}.qcow2"
 
       - uses: oras-project/setup-oras@v1
       - name: Log in to GitHub Packages
@@ -31,4 +31,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish to GitHub Packages
-        run: ./scripts/github-publish.sh "${{ matrix.image }}"
+        run: bash ./scripts/github-publish.sh "${{ matrix.image }}"
