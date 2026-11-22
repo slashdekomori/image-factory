@@ -17,7 +17,7 @@ jobs:
       max-parallel: 1
       fail-fast: false
       matrix:
-        image: [debian-13-wired]
+        image: [debian-13-wired, redos-8-cloud, redos-8-wired]
     steps:
       - uses: actions/checkout@v4
       - name: Validate & Build
