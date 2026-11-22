@@ -6,6 +6,10 @@ concurrency:
   group: image-factory
   cancel-in-progress: false
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build:
     runs-on: self-hosted
@@ -20,3 +24,11 @@ jobs:
         run: ./scripts/validate-build.sh "${{ matrix.image }}"
       - name: Publish
         run: ./scripts/publish.sh "${{ matrix.image }}" "${{ matrix.image }}/output/${{ matrix.image }}.qcow2"
+
+      - uses: oras-project/setup-oras@v1
+      - name: Log in to GitHub Packages
+        run: echo "$GITHUB_TOKEN" | oras login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish to GitHub Packages
+        run: ./scripts/github-publish.sh "${{ matrix.image }}"
