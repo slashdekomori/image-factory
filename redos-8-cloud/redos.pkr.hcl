@@ -15,7 +15,7 @@ source "qemu" "redos" {
   vm_name          = "redos-8-cloud.qcow2"
   format           = "qcow2"
   accelerator      = "kvm"
-  disk_size        = "20G"
+  disk_size        = "10G"
   disk_interface   = "virtio-scsi"
   net_device       = "virtio-net"
   disk_compression = true
