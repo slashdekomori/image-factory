@@ -1,0 +1,9 @@
+#cloud-config
+ssh_pwauth: true
+users:
+  - name: packer
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    lock_passwd: false
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPRu1PCDs+GWK5gUsdaaGkGDK+zIZm6qEh91hZffEO1x packer-build
